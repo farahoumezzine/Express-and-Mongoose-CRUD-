@@ -3,11 +3,12 @@ const mongoose= require ("mongoose");
 const bodyParser= require ("body-parser");
 
 const Contact= require ("./routes/Contact");
-app.use("/api", Contact);
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use("/api", Contact);
 
 //connection from mongoose to mongoDB
 const connecttoDB= async()=> {

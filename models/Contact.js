@@ -26,3 +26,4 @@ emailAdd:{
     unique:true,
 }
 });
+module.exports=mongoose.model("Contact",contactSchema);
