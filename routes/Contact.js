@@ -28,8 +28,8 @@ try{
 
 })
 
-//read all contacts
-router.get("/contact", async(req, res) => {
+    //read all contacts
+    router.get("/contact", async(req, res) => {
     try{
         Contact.find()
         .then((contacts) => {
@@ -70,4 +70,30 @@ router.get("/contact", async(req, res) => {
         }
     });
 
+    //search
+    router.get("/search", async(req, res) => {
+        try{
+            const searchTerm = req.query.searchTerm;
+            const searchRegex = new RegExp(searchTerm,"i");
+            const matchingContacts = await Contact.find({
+                $or: [
+                    {firstName: searchRegex},
+                    {lastName: searchRegex},
+                    {emailAdd: searchRegex}
+                ]
+            })
+            .then((contact) => {
+                console.log(contact);
+                res.status(200).json({contact: contact });
+    
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(500).json({msg: "Unable to find contacts"});
+            })
+        }catch(error){
+            console.log(error);
+            res.status(500).json({msg: "Unable to search contact"})
+        }
+    });
 module.exports=router;
