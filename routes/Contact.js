@@ -96,4 +96,27 @@ try{
             res.status(500).json({msg: "Unable to search contact"})
         }
     });
+
+    //update
+    //6709835b0e422fe17c9d3928
+    router.put("/contact/:id", async(req,res)=> {
+        try{
+            const id = req.params.id;
+            const {firstName, lastName, emailAdd} = req.body;
+            const Updatecontact = await Contact.findByIdAndUpdate(id, {firstName, lastName, emailAdd},
+                {new: true})
+                .then((Updatecontact) => {
+                    console.log(Updatecontact);
+                    res.status(200).json({msg : "Updated successfully" ,contact: Updatecontact});
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                        res.status(500).json({msg: "Unable to update contact"});
+                        })
+                        }catch(error){
+                            console.log(error);
+                            res.status(500).json({msg: "Unable to update contact"});
+
+        }
+    });
 module.exports=router;
