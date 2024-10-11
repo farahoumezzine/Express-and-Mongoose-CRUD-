@@ -13,7 +13,11 @@ try{
     })
     .catch((error) => {
         console.log(error);
-        res.status(500).json({message: "unable to save contact"});
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.emailAddress){
+            res.status(500).json({message: "email must be UNIQUE"});
+
+        }
+        res.status(500).json({message: "unable to create a new contact"});
     })
 
 }catch(error){
