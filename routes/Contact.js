@@ -94,4 +94,29 @@ try{
     });
 
 
+    //findByIdAndDelete -> HARD DELETE
+    //findByIdAndUpdate -> SOFT delete 
+    router.delete("/contact/:id", async(req, res) => {
+        try {
+            const id = req.params.id;
+            const deletedContact = await Contact.findByIdAndUpdate(id, 
+                { isDeleted: true, deletedAt: new Date() }, 
+                { new: true } // Return the updated document
+            ).lean().exec();
+            if (!deletedContact) {
+                return res.status(404).json({ msg: "Contact not found" });
+            }
+    
+            res.status(200).json({ contact : deletedContact, msg: "Contact soft deleted" });
+            } catch (error) {
+                console.error('Error soft delete contacts:', error);
+                res.status(500).json({ msg: "Unable to delete contacts", error: error.message
+                    }
+                    );
+                    }
+                    });
+
+
+
+                
 module.exports=router;

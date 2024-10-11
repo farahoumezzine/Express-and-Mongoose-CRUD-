@@ -24,6 +24,11 @@ emailAdd:{
     type:String,
     required:[true, "Email is required" ],
     unique:true,
-}
+},
+
+// ADD SOFT delete
+isDeleted: { type: Boolean, default: false }, 
+deletedAt: { type: Date } // Timestamp for soft delete
+
 });
 module.exports=mongoose.model("Contact",contactSchema);
