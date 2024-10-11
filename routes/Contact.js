@@ -28,51 +28,37 @@ try{
 
 })
 
-    //read all contacts
-    router.get("/contact", async(req, res) => {
-    try{
-        Contact.find()
-        .then((contacts) => {
-            console.log(contacts);
-            res.status(200).json({contacts: contacts });
 
-        })
-        .catch((error) => {
-            console.log(error);
-            res.status(500).json({msg: "Unable to get contacts"});
-        })
-        }catch(error){
-            console.log(error);
-            res.status(500).json({msg: "Unable to get contacts"})
-        }
+    // Read all contacts
+    router.get("/contact", async (req, res) => {
+    try {
+        //optimize the query
+      const contacts = await Contact.find().lean().exec();
+      res.status(200).json({ contacts });
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+      res.status(500).json({ msg: "Unable to get contacts", error: error.message });
+    }
+  });
 
-
-    });
 
     //read single contact
     //6709835b0e422fe17c9d3928
     router.get("/contact/:id", async(req,res) => {
-        try{
+        try {
             const id = req.params.id;
-            Contact.findById(id)
-            .then((contact) => {
-                console.log(contact);
-                res.status(200).json({contact: contact });
-    
-            })
-            .catch((error) => {
-                console.log(error);
-                res.status(500).json({msg: "Unable to get contacts"});
-            })
-        }catch(error){
-            console.log(error);
-            res.status(500).json({msg: "Unable to get contact"})
+
+          const contacts = await Contact.findById(id).lean().exec();
+          res.status(200).json({ contacts });
+        } catch (error) {
+          console.error('Error fetching contacts:', error);
+          res.status(500).json({ msg: "Unable to get contacts", error: error.message });
         }
     });
 
     //search
     router.get("/search", async(req, res) => {
-        try{
+        try {
             const searchTerm = req.query.searchTerm;
             const searchRegex = new RegExp(searchTerm,"i");
             const matchingContacts = await Contact.find({
@@ -81,42 +67,31 @@ try{
                     {lastName: searchRegex},
                     {emailAdd: searchRegex}
                 ]
-            })
-            .then((contact) => {
-                console.log(contact);
-                res.status(200).json({contact: contact });
-    
-            })
-            .catch((error) => {
-                console.log(error);
-                res.status(500).json({msg: "Unable to find contacts"});
-            })
-        }catch(error){
-            console.log(error);
-            res.status(500).json({msg: "Unable to search contact"})
+            }).lean().exec();
+
+          res.status(200).json({ contact : matchingContacts });
+        } catch (error) {
+          console.error('Error fetching contacts:', error);
+          res.status(500).json({ msg: "Unable to search contacts", error: error.message });
         }
     });
 
     //update
     //6709835b0e422fe17c9d3928
     router.put("/contact/:id", async(req,res)=> {
-        try{
+        try {
             const id = req.params.id;
             const {firstName, lastName, emailAdd} = req.body;
-            const Updatecontact = await Contact.findByIdAndUpdate(id, {firstName, lastName, emailAdd},
-                {new: true})
-                .then((Updatecontact) => {
-                    console.log(Updatecontact);
-                    res.status(200).json({msg : "Updated successfully" ,contact: Updatecontact});
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                        res.status(500).json({msg: "Unable to update contact"});
-                        })
-                        }catch(error){
-                            console.log(error);
-                            res.status(500).json({msg: "Unable to update contact"});
 
+            const Updatecontact = await Contact.findByIdAndUpdate(id, {firstName, lastName, emailAdd},{new: true})
+            .lean().exec();
+          res.status(200).json({ contact : Updatecontact });
+        } catch (error) {
+          console.error('Error fetching contacts:', error);
+          res.status(500).json({ msg: "Unable to update contacts", error: error.message });
         }
+
     });
+
+
 module.exports=router;
